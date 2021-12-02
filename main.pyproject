@@ -1,0 +1,3 @@
+{
+    "files": ["mainwindow.h","mainwindow.cpp","main.qml","main.py","mainwindow.ui","resources.qrc"]
+}

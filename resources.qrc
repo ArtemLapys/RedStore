@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/mainWindow">
+        <file>imageRedStore/search.png</file>
+        <file>imageRedStore/settings.png</file>
+        <file>imageRedStore/support.png</file>
+    </qresource>
+</RCC>
