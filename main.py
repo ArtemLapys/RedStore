@@ -38,6 +38,8 @@ class MainWindow(QMainWindow):
         table.setCellWidget(0,0,self.pushButtons)
         layout.addWidget(table)
 
+        #table
+
 
 
         self.loadTableApp()
