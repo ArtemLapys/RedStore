@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self.pushButtons.setObjectName("Установить")
         table.setCellWidget(0,0,self.pushButtons)
         layout.addWidget(table)
-
+#s
 
 
 
