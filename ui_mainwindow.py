@@ -123,7 +123,7 @@ class Ui_MainWindow(object):
 "background-color:#E44641;\n"
 "}\n"
 "")
-        self.progressBar.setProperty("value", 0)
+        self.progressBar.setProperty("value", 10)
         self.progressBar.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.progressBar.setTextVisible(False)
         self.progressBar.setOrientation(QtCore.Qt.Horizontal)
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
 "")
         self.textInstallorDeleteLabel.setScaledContents(False)
         self.textInstallorDeleteLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.textInstallorDeleteLabel.setObjectName("textInstallorDeleteLabel")
+        self.textInstallorDeleteLabel.setText("mkjhgvbnhjkl")
         self.progressTextLabel = QtWidgets.QLabel(self.installationFooter)
         self.progressTextLabel.setGeometry(QtCore.QRect(0, 21, 1280, 18))
         self.progressTextLabel.setStyleSheet("color:black;\n"
@@ -188,22 +188,23 @@ class Ui_MainWindow(object):
     
 
 
-
+        #таблица
         self.tableWidget = QtWidgets.QTableWidget(self.iapp)
-        self.tableWidget.setGeometry(QtCore.QRect(20, 10, 1231, 601))
+        self.tableWidget.setGeometry(QtCore.QRect(20, 20, 1231, 601))
         self.tableWidget.setStyleSheet("border:2px solid black;\n"
 "")
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Название","Автор","Установочный пакет", "Установить"])
+        #self.tableWidget.setRowCount(0)
 
 
-
-        #self.tabWidget.tabBar().hide()
+        self.tabWidget.tabBar().hide()
         #qttablet переходит на задний план:
-        #self.tabWidget.raise_()
-        #self.header.raise_()
-        #self.installationFooter.raise_()
+        self.tabWidget.raise_()
+        self.header.raise_()
+        self.installationFooter.raise_()
+        
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -217,10 +218,12 @@ class Ui_MainWindow(object):
         self.searchButton.clicked.connect(self.tabWidget.setCurrentIndex)
         self.supportButton.clicked.connect(self.tabWidget.setCurrentIndex)
         self.settingsButton.clicked.connect(self.tabWidget.setCurrentIndex)
-
-
-
      
+
+        self.pushButton = QtWidgets.QPushButton(self.header)
+        self.pushButton.setGeometry(QtCore.QRect(700, 10, 80, 26))
+        self.pushButton.setObjectName("pushButton")
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

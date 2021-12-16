@@ -11,6 +11,7 @@
 #from PyQt5.QtGui import *
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
+
 class Header(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(int)
     
