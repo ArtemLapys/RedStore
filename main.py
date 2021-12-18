@@ -1,11 +1,11 @@
 #-*- coding: utf-8 -*-
 
-import PyQt5 
-import os
+#import PyQt5 
+#import os
 import sys
-import fdb
-import pyautogui
-from time import sleep
+###import fdb
+#import pyautogui
+#from time import sleep
 #import sqlite3
 
 #from pathlib import Path
@@ -15,75 +15,82 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
-from fdb.fbcore import Error
+###from fdb.fbcore import Error
 
 from ui_mainwindow import Ui_MainWindow
-from installApp import Install
+#from installApp import Install
+
+
+#import iapp --ЭТО test.py
+
+###MAX_COUNT = 100
+###WIDTH = 10
+###HEIGHT = 5
+###PAGE_SIZE = WIDTH*HEIGHT
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.installationFooter.hide()
+        
 
-        #tablet
-        self.ui.tableWidget.setColumnWidth(0,280)
-        self.ui.tableWidget.setColumnWidth(1,300)
-        self.ui.tableWidget.setColumnWidth(2,350)
-        self.ui.tableWidget.setColumnWidth(3,250)       
-        layout = Qt.QHBoxLayout(self)
-        table = self.ui.tableWidget
-        self.pushButtons = QtWidgets.QPushButton(table)        
-        self.pushButtons.setObjectName("Установить")
-        table.setCellWidget(0,0,self.pushButtons)
-        layout.addWidget(table)
-
-        #table
-
-
-
-        self.loadTableApp()
-
-
-    
-    
-    def loadTableApp(self):
-            hostDB = 'localhost'
-            DB = '/var/REDStore/RedStore.fdb'
-            userLogin = 'SYSDBA'
-            userPassword ='000000'
-            try:
-                connection = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
-                cur = connection.cursor()
-                print("Connected to database.")
+   # def loadIApp():
+        
+       
+###class AppTab(QWidget):
+###  def __init__(self):
+###    super().__init__(None)
+###    self.grid = QGridLayout()
+###    self.scrollBar = QScrollBar()
+###    self.scrollBar.setMaximum(MAX_COUNT//PAGE_SIZE)#это надо переделать
+###    self.scrollBar.valueChanged.connect(self.setActivePage)
+###    l = QHBoxLayout()
+###    l.addLayout(self.grid)
+###    l.addWidget(self.scrollBar)
+###    self.setActivePage(0)
+###    self.setLayout(l)
+   
+   
+    #     # self.loadApp()
+    # def loadApp(self):
+    #         hostDB = 'localhost'
+    #         DB = '/var/REDStore/RedStore.fdb'
+    #         userLogin = 'SYSDBA'
+    #         userPassword ='000000'
+    #         try:
+    #             connection = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
+    #             cur = connection.cursor()
+    #             print("Connected to database.")
                 
-                cur.execute('select TITLE, AUTHOR, INSTALL_PACK from APP')
-                resultApp = cur.fetchall()
+    #             cur.execute('select TITLE, AUTHOR, INSTALL_PACK from APP')
+    #             resultApp = cur.fetchall()
                 
-                tableRow = 0
-                for row in resultApp:
-                    rowPosition = self.ui.tableWidget.rowCount()
-                    self.ui.tableWidget.insertRow(rowPosition)
+    #             tableRow = 0
+    #             for row in resultApp:
+    #                 rowPosition = self.ui.tableWidget.rowCount()
+    #                 self.ui.tableWidget.insertRow(rowPosition)
 
-                    print(tableRow)
-                    self.ui.tableWidget.setRowCount(tableRow+1)
-                    self.ui.tableWidget.setItem(tableRow,0, QtWidgets.QTableWidgetItem(row[0]))
-                    self.ui.tableWidget.setItem(tableRow,2, QtWidgets.QTableWidgetItem(row[2]))
-                    button = QtWidgets.QPushButton(str("Установить"))
-                    button.clicked.connect(lambda ch, btn=button:self.insta())
-                    self.ui.tableWidget.setCellWidget(rowPosition,3,button)
-                    for r in cur.execute('select FIRST_NAME,LAST_NAME from AUTHORS where ID='+str(row[1])):
-                        self.ui.tableWidget.setItem(tableRow,1, QtWidgets.QTableWidgetItem(r[0]+" "+r[1]))
-                    tableRow +=1
-                cur.close()
+    #                 print(tableRow)
+    #                 self.ui.tableWidget.setRowCount(tableRow+1)
+    #                 self.ui.tableWidget.setItem(tableRow,0, QtWidgets.QTableWidgetItem(row[0]))
+    #                 self.ui.tableWidget.setItem(tableRow,2, QtWidgets.QTableWidgetItem(row[2]))
+    #                 button = QtWidgets.QPushButton(str("Установить"))
+    #                 button.clicked.connect(lambda ch, btn=button:self.insta())
+    #                 self.ui.tableWidget.setCellWidget(rowPosition,3,button)
+    #                 for r in cur.execute('select FIRST_NAME,LAST_NAME from AUTHORS where ID='+str(row[1])):
+    #                     self.ui.tableWidget.setItem(tableRow,1, QtWidgets.QTableWidgetItem(r[0]+" "+r[1]))
+    #                 tableRow +=1
+    #             cur.close()
 
           
-            except fdb.Error as error:
-                print("[Error-#101] - Module \"fdb\" operation error.") 
-            finally:
-                if connection:
-                    connection.close()
-            print("Connection with database is closed.")
+    #         except fdb.Error as error:
+    #             print("[Error-#101] - Module \"fdb\" operation error.") 
+    #         finally:
+    #             if connection:
+    #                 connection.close()
+    #         print("Connection with database is closed.")
     
     def insta(self):
         self.ui.textInstallorDeleteLabel.setText("")
