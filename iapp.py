@@ -1,5 +1,4 @@
 import sys
-#тут потом вместо * запиши, какие классы точно нужны, нет смысла импортить всё
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql     import *
 from PyQt5.QtCore    import *
