@@ -1,75 +1,72 @@
 import sys
-#тут потом вместо * запиши, какие классы точно нужны, нет смысла импортить всё
+import os
+#тут потом вместо * указать, какие классы точно нужны, нет смысла импортить всё
 from PyQt5.QtWidgets import *
-from PyQt5.QtSql     import *
 from PyQt5.QtCore    import *
 from PyQt5.QtGui     import *
 
-MAX_COUNT = 100
+import fdb
+#import sqlite3
+
+MAX_COUNT = 100 #используется только для создания таблицы
 WIDTH = 10
 HEIGHT = 5
-PAGE_SIZE = WIDTH*HEIGHT
+#PAGE_SIZE = WIDTH*HEIGHT
 
-def initDb():
-  db = QSqlDatabase.addDatabase("QSQLITE");
-  db.setDatabaseName(":memory:");
-  db.open()
-  query = QSqlQuery(db)
-  query.exec_("CREATE TABLE Apps ("
-              "  Id      INTEGER PRIMARY KEY,"
-              "  AppName INTEGER"
-              ");")
-  for i in range(MAX_COUNT):
-    query.exec_("INSERT INTO Apps (id, AppName) VALUES"
-                "(" +str(i)+ ", 'App" +str(i)+ "');")
+APP_WIDTH = 135
+APP_HEIGHT = 135
 
-def getApps(page):
-  db = QSqlDatabase.database()
-  query = QSqlQuery(db)
-  query.exec_("SELECT AppName FROM Apps WHERE id BETWEEN " +
-              str(page*PAGE_SIZE)+ " AND " +str((page+1)*PAGE_SIZE-1)+ ";")
-  result = []
-  while query.next():
-    result.append(query.record().value(0))
-  return result
+hostDB = 'localhost'
+DB = '/var/REDStore/RedStore.fdb'
+userLogin = 'SYSDBA'
+userPassword ='000000'
 
-#это наш кастомный виджет тоже заглушка
-class Widget(QLabel):
-  def __init__(self, text, image=None):
+
+
+class App(QWidget):
+  def __init__(self, text, image=None):   
     super().__init__(None)
-    self.setText(text)
-    self.setFixedWidth(100)
-    self.setFixedHeight(100)
+    self.setFixedWidth(APP_WIDTH)
+    self.setFixedHeight(APP_HEIGHT)
+    w1 = QLabel()
+    w1.setAlignment(Qt.AlignCenter | Qt.AlignBottom)
+    w2 = QLabel(text)
+    w2.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+    #тут картинку бери на основе image=None
+    w2.setWordWrap(True)
+    w1.setPixmap(QPixmap(":/mainWindow/imageRedStore/search.png"))
+    l = QVBoxLayout()
+    l.setContentsMargins(0,0,0,0)
+    l.addWidget(w1)
+    l.addWidget(w2)
+    self.setLayout(l)
 
 class AppTab(QWidget):
   def __init__(self):
     super().__init__(None)
     self.grid = QGridLayout()
     self.scrollBar = QScrollBar()
-    self.scrollBar.setMaximum(MAX_COUNT//PAGE_SIZE)#это надо переделать
+    self.scrollBar.hide()  
     self.scrollBar.valueChanged.connect(self.setActivePage)
     l = QHBoxLayout()
     l.addLayout(self.grid)
     l.addWidget(self.scrollBar)
-    self.setActivePage(0)
     self.setLayout(l)
-  
-  
-  def setActivePage(self, page):
+
+  def setActivePage(self, line):
     for i in range(self.grid.count()):
       self.grid.itemAt(i).widget().deleteLater()
-    apps = getApps(page)
+    apps = self.getApps(line)
     row = 0
     column = 0
     for i in range(len(apps)):
-      self.grid.addWidget(Widget(apps[i]), row, column)
+      self.grid.addWidget(App(apps[i]), row, column)
       if column<WIDTH-1:
         column = column + 1
       else:
         column = 0
         row = row + 1
-  
-  
+
   def wheelEvent(self, event):
       y = event.angleDelta().y()
       value = self.scrollBar.value()
@@ -77,4 +74,35 @@ class AppTab(QWidget):
         self.scrollBar.setValue(value-1)
       if y<0:
         self.scrollBar.setValue(value+1)
-###      print(y)
+
+  def activated(self):
+    self.con = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
+    #self.createTable()
+    self.maxCount = self.getMaxCount()
+    if (self.maxCount%WIDTH == 0):
+      self.scrollBar.setMaximum(self.maxCount//WIDTH - 1)
+    else:
+      self.scrollBar.setMaximum(self.maxCount//WIDTH-3)
+    self.setActivePage(0)
+    self.grid.setRowStretch(HEIGHT, 1)
+    self.grid.setColumnStretch(WIDTH, 1)
+
+  def deactivated(self):
+    self.con.close()
+
+  def getMaxCount(self):
+    cur = self.con.cursor()
+    cur.execute("SELECT COUNT(*) FROM App")
+    return cur.fetchone()[0]
+
+  def getApps(self, line):
+    cur = self.con.cursor()
+    cur.execute("SELECT Title FROM App WHERE id BETWEEN " +
+                str(line*WIDTH)+ " AND " +str(line*WIDTH+HEIGHT*WIDTH-1)+ ";")
+    result = []
+    for row in cur.fetchall():
+      for column in row:
+        result.append(column)
+    return result
+
+

@@ -10,8 +10,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from headerClass import Header
 
-from iapp import AppTab, initDb
-
+from iapp import AppTab
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -166,23 +165,9 @@ class Ui_MainWindow(object):
         self.home.setObjectName("home")
         self.tabWidget.addTab(self.home, "home")
 
-
-
-
-
-
-
-        initDb()
         self.iapp = AppTab()
         self.iapp.setObjectName("iapp")
         self.tabWidget.addTab(self.iapp, "iapp")
-
-
-
-
-
-
-
 
         self.installapp = QtWidgets.QWidget()
         self.installapp.setObjectName("installapp")
@@ -200,7 +185,12 @@ class Ui_MainWindow(object):
         self.settings.setObjectName("settings")
         self.tabWidget.addTab(self.settings, "settings")
     
-
+        def tabActivated(index):
+          if index==1:
+            self.tabWidget.widget(1).activated()
+          else:
+            self.tabWidget.widget(1).deactivated()
+        self.tabWidget.currentChanged.connect(tabActivated)
 
         #self.tabWidget.tabBar().hide()
         #qttablet переходит на задний план:
