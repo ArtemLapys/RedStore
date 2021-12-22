@@ -11,7 +11,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from headerClass import Header
 
 from iapp import IappTab
-#from page import pageApp
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -250,6 +249,10 @@ class Ui_MainWindow(object):
         self.descriptionAppPageIApp_Lapes.setObjectName("descriptionAppPageIApp_Lapes")
         self.tabWidget.addTab(self.PageIApp, "")
 
+        self.settings = QtWidgets.QWidget()
+        self.settings.setObjectName("settings")
+        self.tabWidget.addTab(self.settings, "settings")
+
         
         
     
@@ -305,5 +308,5 @@ class Ui_MainWindow(object):
         self.nameOrgAppPageIApp_Label.setText(_translate("MainWindow", "nameOrgApp_Label"))
         self.miniDiscrAppPageIApp_Lapes.setText(_translate("MainWindow", "miniDiscrAppInstallApp_Lapes"))
         self.descriptionAppPageIApp_Lapes.setText(_translate("MainWindow", "descriptionAppInstallApp_Lapes"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PageIApp), _translate("MainWindow", "iapp"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PageIApp), _translate("MainWindow", "PageIApp"))
 import resources_rc
