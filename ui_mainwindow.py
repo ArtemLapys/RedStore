@@ -11,6 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from headerClass import Header
 
 from iapp import IappTab
+#from page import pageApp
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -168,8 +169,8 @@ class Ui_MainWindow(object):
         self.iapp = IappTab()
         self.iapp.setObjectName("iapp")
         self.tabWidget.addTab(self.iapp, "iapp")
-        def installApp(appname):
-          QtWidgets.QMessageBox.information(self.iapp, "title", "ктото жмякнул на " + appname + ". Что делаем дальше?")
+        def installApp(appname, index):
+          QtWidgets.QMessageBox.information(self.iapp, "title", "ктото жмякнул на " + appname + ".\nприложуха имеет id=" + str(index))
         self.iapp.appClicked.connect(installApp)
 
         self.installapp = QtWidgets.QWidget()

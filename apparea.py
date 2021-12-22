@@ -9,8 +9,9 @@ APP_HEIGHT = 135
 
 class App(QWidget):
   clicked = pyqtSignal()
-  def __init__(self, text, image):
+  def __init__(self, text, image, index):
     super().__init__(None)
+    self.index = index
     self.setFixedWidth(APP_WIDTH)
     self.setFixedHeight(APP_HEIGHT)
     w1 = QLabel()
@@ -34,7 +35,7 @@ class App(QWidget):
       self.clicked.emit()
 
 class AppArea(QWidget):
-  appClicked = pyqtSignal(str)
+  appClicked = pyqtSignal(str, int)
   def __init__(self):
     super().__init__(None)
     self.columnCount = 10
@@ -48,16 +49,17 @@ class AppArea(QWidget):
     l.addWidget(self.scrollBar)
     self.setLayout(l)
 
+
   def setActivePage(self, line):
     for i in range(self.grid.count()):
       self.grid.itemAt(i).widget().deleteLater()
-    (names, images) = self.getApps(line)
+    (names, images, indexes) = self.getApps(line)
     row = 0
     column = 0
     for i in range(len(names)):
-      app = App(names[i], images[i])
+      app = App(names[i], images[i], indexes[i])
       self.grid.addWidget(app, row, column)
-      app.clicked.connect(lambda: self.appClicked.emit(QObject().sender().w2.text()))
+      app.clicked.connect(lambda: self.appClicked.emit(QObject().sender().w2.text(), QObject().sender().index))
       if column<self.columnCount-1:
         column = column + 1
       else:

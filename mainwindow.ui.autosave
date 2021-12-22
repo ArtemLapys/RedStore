@@ -581,6 +581,26 @@ background:transparent;
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>-10</y>
+        <width>211</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: white;
+border-radius:20px;
+background-color:#E44641;
+
+</string>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <zorder>tabWidget</zorder>

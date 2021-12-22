@@ -513,7 +513,7 @@ background:transparent;
 </string>
       </property>
       <property name="text">
-       <string>nameAppInstallApp_Label</string>
+       <string>nameAppPageIApp_Label</string>
       </property>
      </widget>
      <widget class="QLabel" name="nameOrgAppPageIApp_Label">
@@ -536,7 +536,7 @@ background:transparent;
 </string>
       </property>
       <property name="text">
-       <string>nameOrgApp_Label</string>
+       <string>nameOrgAppPageIApp_Label</string>
       </property>
      </widget>
      <widget class="QLabel" name="miniDiscrAppPageIApp_Lapes">
@@ -554,7 +554,7 @@ background:transparent;
 </string>
       </property>
       <property name="text">
-       <string>miniDiscrAppInstallApp_Lapes</string>
+       <string>miniDiscrAppPageIApp_Lapes</string>
       </property>
      </widget>
      <widget class="QLabel" name="descriptionAppPageIApp_Lapes">
@@ -572,13 +572,26 @@ background:transparent;
 </string>
       </property>
       <property name="text">
-       <string>descriptionAppInstallApp_Lapes</string>
+       <string>descriptionAppPageIApp_Lapes</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>790</x>
+        <y>30</y>
+        <width>211</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
       </property>
      </widget>
     </widget>

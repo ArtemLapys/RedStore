@@ -16,7 +16,6 @@ MAX_COUNT = 100 #это чисто для создания таблицы
 class IappTab(AppArea):
   def activated(self):
     self.con = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
-    #self.createTable()
     self.maxCount = self.getMaxCount()
     if (self.maxCount%self.columnCount == 0):
       self.scrollBar.setMaximum(self.maxCount//self.columnCount - 1)
@@ -37,11 +36,12 @@ class IappTab(AppArea):
   def getApps(self, line):
     cur = self.con.cursor()
     cur.execute("SELECT FIRST " + str(self.rowCount*self.columnCount) +
-" SKIP " + str(line*self.columnCount) + " Title, Icon FROM App ORDER BY Id;")
-    #cur.set_stream_blob("Icon")
+" SKIP " + str(line*self.columnCount) + " Title, Icon, Id FROM App ORDER BY Id;")
     appNames = []
     images = []
+    indexes = []
     for row in cur.fetchall():
       appNames.append(row[0])
       images.append(row[1])
-    return (appNames, images)
+      indexes.append(int(row[2]))
+    return (appNames, images, indexes)
