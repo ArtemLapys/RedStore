@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+        #self.ui.installationFooter.hide() --возможно нужно убрать!!!!
         
 
    # def loadIApp():
