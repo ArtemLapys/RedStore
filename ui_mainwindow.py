@@ -11,9 +11,23 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from headerClass import Header
 
 from iapp import IappTab
+from pageApp import Page
+from home import Home
+from search import Search
+
+import sqlite3
+import fdb
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        hostDB = 'localhost'
+        DB = '/var/REDStore/RedStore.fdb'
+        userLogin = 'SYSDBA'
+        userPassword ='000000'
+        # MAX_COUNT = 100 #только для создания таблицы
+        self.con = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
+
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(1280, 720)
@@ -159,24 +173,21 @@ class Ui_MainWindow(object):
         self.tabWidget.setMovable(False)
         self.tabWidget.setTabBarAutoHide(False)
 
-        #addTab
+        #main
         self.tabWidget.setObjectName("tabWidget")
-        self.home = QtWidgets.QWidget()
+        self.home = Home(self.con)
         self.home.setObjectName("home")
         self.tabWidget.addTab(self.home, "home")
 
-        self.iapp = IappTab()
+        self.iapp = IappTab(self.con)
         self.iapp.setObjectName("iapp")
         self.tabWidget.addTab(self.iapp, "iapp")
-        def installApp(appname, index):
-          QtWidgets.QMessageBox.information(self.iapp, "title", "ктото жмякнул на " + appname + ".\nприложуха имеет id=" + str(index))
-        self.iapp.appClicked.connect(installApp)
 
         self.installapp = QtWidgets.QWidget()
         self.installapp.setObjectName("installapp")
         self.tabWidget.addTab(self.installapp, "installapp")
 
-        self.searchapp = QtWidgets.QWidget()
+        self.searchapp = Search()
         self.searchapp.setObjectName("searchapp")
         self.tabWidget.addTab(self.searchapp, "searchapp")
 
@@ -188,15 +199,47 @@ class Ui_MainWindow(object):
         self.settings.setObjectName("settings")
         self.tabWidget.addTab(self.settings, "settings")
 
-        #PageIApp
 
+        page = Page(self.con)
+        self.tabWidget.addTab(page, "pageApp")
+        self.iapp.appClicked.connect(page.setInformation)
+        self.iapp.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
+
+        self.home.area.appClicked.connect(page.setInformation)
+        self.home.area.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
+
+
+        def activate(index):
+          if index==0:
+            self.home.area.updateWidgets()
+        self.tabWidget.currentChanged.connect(activate)
+        self.tabWidget.tabBarClicked.connect(activate)
+        self.homeButton.clicked.connect(lambda: activate(0))
+
+
+
+        ###рекурсивный вызов!!!
+        def initSearch(text):
+          if self.tabWidget.currentIndex() == 0:
+            self.tabWidget.setCurrentIndex(3)
+            self.searchapp.startEdit(text)
+        def processSearch(text):
+          if self.tabWidget.currentIndex() == 3:
+            self.home.searchBar.setText(text)
+            if text == "":
+              self.tabWidget.setCurrentIndex(0)
+              self.home.searchBar.setFocus()
+        self.home.searchRequested.connect(initSearch)
+        self.searchapp.searchBar.textChanged.connect(processSearch)
+
+        #PageIApp
         self.PageIApp = QtWidgets.QWidget()
         self.PageIApp.setObjectName("PageIApp")
         self.tabWidget.addTab(self.PageIApp, "PageIApp")
         self.iconPageIApp_Label = QtWidgets.QLabel(self.PageIApp)
         self.iconPageIApp_Label.setGeometry(QtCore.QRect(60, 20, 125, 125))
         self.iconPageIApp_Label.setText("")
-        self.iconPageIApp_Label.setPixmap(QtGui.QPixmap(":/mainWindow/imageRedStore/obs.png"))
+        self.iconPageIApp_Label.setPixmap(QtGui.QPixmap(":/mainWindow/imageRedStore/logo.png"))
         self.iconPageIApp_Label.setObjectName("iconPageIApp_Label")
         self.installButtonPageIApp_Label = QtWidgets.QLabel(self.PageIApp)
         self.installButtonPageIApp_Label.setGeometry(QtCore.QRect(1003, 30, 219, 40))
@@ -220,6 +263,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.nameAppPageIApp_Label.setFont(font)
+        self.nameAppPageIApp_Label.setText("nameAppPageIApp_Label")
         self.nameAppPageIApp_Label.setStyleSheet("color: black;\n"
 "background:transparent;\n"
 "")
@@ -247,21 +291,8 @@ class Ui_MainWindow(object):
         self.descriptionAppPageIApp_Lapes.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.descriptionAppPageIApp_Lapes.setWordWrap(True)
         self.descriptionAppPageIApp_Lapes.setObjectName("descriptionAppPageIApp_Lapes")
-        self.tabWidget.addTab(self.PageIApp, "")
+        self.tabWidget.addTab(self.PageIApp, "PageIApp")
 
-        self.settings = QtWidgets.QWidget()
-        self.settings.setObjectName("settings")
-        self.tabWidget.addTab(self.settings, "settings")
-
-        
-        
-    
-        def tabActivated(index):
-          if index==1:
-            self.tabWidget.widget(1).activated()
-          else:
-            self.tabWidget.widget(1).deactivated()
-        self.tabWidget.currentChanged.connect(tabActivated)
 
         #self.tabWidget.tabBar().hide()
         #qttablet переходит на задний план:
@@ -276,6 +307,7 @@ class Ui_MainWindow(object):
         
         #------Внесенные изменения------#
         #self.homeButton.clicked = clickTabOne()
+
         self.homeButton.clicked.connect(self.tabWidget.setCurrentIndex)
         self.cEditorialButton.clicked.connect(self.tabWidget.setCurrentIndex)
         self.iApplicationButton.clicked.connect(self.tabWidget.setCurrentIndex)
@@ -292,9 +324,6 @@ class Ui_MainWindow(object):
         self.homeButton.setText(_translate("MainWindow", "Домашняя страница"))
         self.cEditorialButton.setText(_translate("MainWindow", "Выбор редакции"))
         self.iApplicationButton.setText(_translate("MainWindow", "Установленные приложения"))
-        #self.searchButton.setText(_translate("MainWindow", "Поиск приложения"))
-        #self.supportButton.setText(_translate("MainWindow", "Поддержка REDStore"))
-        #self.settingsButton.setText(_translate("MainWindow", "Настройки REDStore"))
         self.textInstallorDeleteLabel.setText(_translate("MainWindow", "textInstallorDeleteLabel"))
         self.progressTextLabel.setText(_translate("MainWindow", "progressTextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.home), _translate("MainWindow", "home"))
@@ -303,10 +332,5 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.searchapp), _translate("MainWindow", "searchapp"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.support), _translate("MainWindow", "support"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.settings), _translate("MainWindow", "settings"))
-        self.installButtonPageIApp_Label.setText(_translate("MainWindow", "Установить"))
-        self.nameAppPageIApp_Label.setText(_translate("MainWindow", "nameAppInstallApp_Label"))
-        self.nameOrgAppPageIApp_Label.setText(_translate("MainWindow", "nameOrgApp_Label"))
-        self.miniDiscrAppPageIApp_Lapes.setText(_translate("MainWindow", "miniDiscrAppInstallApp_Lapes"))
-        self.descriptionAppPageIApp_Lapes.setText(_translate("MainWindow", "descriptionAppInstallApp_Lapes"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PageIApp), _translate("MainWindow", "PageIApp"))
+
 import resources_rc

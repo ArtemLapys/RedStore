@@ -15,6 +15,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
+###from fdb.fbcore import Error
 
 from ui_mainwindow import Ui_MainWindow
 #from installApp import Install
@@ -25,11 +26,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        #self.ui.installationFooter.hide() --возможно нужно убрать!!!!
+        self.ui.installationFooter.hide()
         
 
-   # def loadIApp():
-        
     
     def insta(self):
         self.ui.textInstallorDeleteLabel.setText("")

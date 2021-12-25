@@ -1,32 +1,24 @@
-# import sys
-# import os
-#from PyQt5.QtWidgets import *
-#from PyQt5.QtCore    import *
-#from PyQt5.QtGui     import *
-import fdb
+import sys
+import os
+#тут потом вместо * указать, какие классы точно нужны, плохо импортить всё
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore    import *
+from PyQt5.QtGui     import *
 from apparea import App, AppArea
 
-hostDB = 'localhost'
-DB = '/var/REDStore/RedStore.fdb'
-userLogin = 'SYSDBA'
-userPassword ='000000'
-
-MAX_COUNT = 100 #это чисто для создания таблицы
+COLUMN_COUNT = 10
+ROW_COUNT = 5
 
 class IappTab(AppArea):
-  def activated(self):
-    self.con = fdb.connect(host=hostDB, database=DB, user=userLogin, password=userPassword, charset='UTF8')
-    self.maxCount = self.getMaxCount()
-    if (self.maxCount%self.columnCount == 0):
-      self.scrollBar.setMaximum(self.maxCount//self.columnCount - 1)
-    else:
-      self.scrollBar.setMaximum(self.maxCount//self.columnCount)
-    self.setActivePage(0)
+  def __init__(self, con):
+    super().__init__()
+    self.con = con
+    self.columnCount = COLUMN_COUNT
+    self.rowCount = ROW_COUNT
+    self.updateScrollBar()
+    self.setFirstLine(0)
     self.grid.setRowStretch(self.rowCount, 1)
     self.grid.setColumnStretch(self.columnCount, 1)
-
-  def deactivated(self):
-    self.con.close()
 
   def getMaxCount(self):
     cur = self.con.cursor()
@@ -36,7 +28,8 @@ class IappTab(AppArea):
   def getApps(self, line):
     cur = self.con.cursor()
     cur.execute("SELECT FIRST " + str(self.rowCount*self.columnCount) +
-" SKIP " + str(line*self.columnCount) + " Title, Icon, Id FROM App ORDER BY Id;")
+" SKIP " + str(line*self.columnCount) + " Title, Icon, Id FROM App WHERE WHITE_APP=TRUE ORDER BY Id;")
+
     appNames = []
     images = []
     indexes = []

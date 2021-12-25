@@ -1,14 +1,5 @@
 #-*- coding: utf-8 -*-
-#import PyQt5
-#import os
-#import sys
 
-#from pathlib import Path
-#from PySide2.QtGui import QGuiApplication
-#from PySide2.QtQml import QQmlApplicationEngine
-#from PyQt5.QtCore import *
-#from PyQt5.QtWidgets import *
-#from PyQt5.QtGui import *
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 
