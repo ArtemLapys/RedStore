@@ -102,6 +102,20 @@ class Home(QWidget):
     if (png.open(QIODevice.ReadOnly)):
       data = png.readAll()
       png.close()
+
+    self.imageSearchLabel = QLabel()
+    self.imageSearchLabel.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
+    pixmap = QPixmap()
+    if isinstance(data,fdb.BlobReader):
+      image = data.read()
+    if not isinstance(data, QPixmap):
+      self.imageSearchLabel.setPixmap(pixmap)
+      pixmap.loadFromData(data)
+      pixmap = pixmap.scaled(28,28, Qt.KeepAspectRatio)
+      self.imageSearchLabel.setPixmap(pixmap)
+    else:
+      self.imageSearchLabel.setPixmap(data)
+      
     categoriesOne = None
     categoriesTwo = None
     categoriesThree = None
@@ -128,18 +142,8 @@ class Home(QWidget):
     self.area.updated.connect(self.selector2.show)
     self.area.updated.connect(self.selector3.show)
     self.area.updated.connect(self.searchBar.show)
-    self.imageSearchLabel = QLabel()
-    self.imageSearchLabel.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
-    pixmap = QPixmap()
-    if isinstance(data,fdb.BlobReader):
-      image = data.read()
-    if not isinstance(data, QPixmap):
-      self.imageSearchLabel.setPixmap(pixmap)
-      pixmap.loadFromData(data)
-      pixmap = pixmap.scaled(28,28, Qt.KeepAspectRatio)
-      self.imageSearchLabel.setPixmap(pixmap)
-    else:
-      self.imageSearchLabel.setPixmap(data)
+    self.area.updated.connect(self.imageSearchLabel.show)
+    
     l1 = QVBoxLayout()
     l1.setContentsMargins(0,25,0,0)
     l2 = QHBoxLayout()
@@ -162,6 +166,7 @@ class Home(QWidget):
     self.selector2.hide()
     self.selector3.hide()
     self.searchBar.hide()
+    self.imageSearchLabel.hide()
 
   def search(self, text):
     self.searchRequested.emit(text)

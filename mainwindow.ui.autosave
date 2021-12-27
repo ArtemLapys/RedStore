@@ -82,9 +82,14 @@
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: black;
+      <string notr="true">QLabel{
+color: black;
 border-bottom: 2px solid #E44641;
-</string>
+margin-border:25%;
+}
+QLabel::after{
+border-bottom: 2px solid #E44641;
+}</string>
      </property>
      <property name="text">
       <string>Домашняя старница</string>

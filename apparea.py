@@ -26,10 +26,19 @@ class App(QWidget):
     pixmap = QPixmap()
     if isinstance(image,fdb.BlobReader):
       image = image.read()
-    w1.setPixmap(pixmap)
-    pixmap.loadFromData(image)
-    pixmap = pixmap.scaled(85,85, Qt.KeepAspectRatio)
-    w1.setPixmap(pixmap)
+    if not isinstance(image, QPixmap):
+      w1.setPixmap(pixmap)
+      pixmap.loadFromData(image)
+      pixmap = pixmap.scaled(85,85, Qt.KeepAspectRatio)
+      w1.setPixmap(pixmap)
+    else:
+      w1.setPixmap(image)
+    # if isinstance(image,fdb.BlobReader):
+    #   image = image.read()
+    # w1.setPixmap(pixmap)
+    # pixmap.loadFromData(image)
+    # pixmap = pixmap.scaled(85,85, Qt.KeepAspectRatio)
+    # w1.setPixmap(pixmap)
     l = QVBoxLayout()
     l.setContentsMargins(0,0,0,0)
     l.addWidget(w1)
