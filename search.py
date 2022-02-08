@@ -6,25 +6,35 @@ import fdb
 
 
 #дефолтные размеры виджета приложения
-APP_WIDTH = 300
+APP_WIDTH = 1070
 APP_HEIGHT = 135
 
 class App(QWidget):
   clicked = pyqtSignal()
-  def __init__(self, text, image=None, index=0):
+  def __init__(self, text, image=None, miniDescr = "", index=0):
     super().__init__(None)
     self.index = index
     self.setFixedWidth(APP_WIDTH)
     self.setFixedHeight(APP_HEIGHT)
     w1 = QLabel()
     self.w2 = QLabel(text)
+    self.w3 = QLabel(miniDescr)
     font = QtGui.QFont()
     font.setFamily("Open Sans")
     font.setPointSize(14)
     self.w2.setFont(font)
-  #  self.w2.setAlignment(Qt.AlignCenter | Qt.AlignBottom)
-    #self.w2.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-    self.w2.setWordWrap(True)
+    self.w2.setContentsMargins(0,25,0,0)
+    self.w3.setContentsMargins(0,0,115,0)
+    font = QtGui.QFont()
+    font.setFamily("Open Sans")
+    font.setPointSize(10)
+    self.w3.setFont(font)
+    self.w2.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
+    self.w3.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+    #self.w2.setWordWrap(True)
+    self.w3.setWordWrap(True)
+    self.w3.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
+
     pixmap = QtGui.QPixmap()
     if isinstance(image,fdb.BlobReader):
       image = image.read()
@@ -35,10 +45,14 @@ class App(QWidget):
       w1.setPixmap(pixmap)
     else:
       w1.setPixmap(image)
+    tempL = QVBoxLayout()
+    tempL.addWidget(self.w2)
+    tempL.addWidget(self.w3)
+    tempL.setContentsMargins(2,0,0,0)
     l = QHBoxLayout()
     l.setContentsMargins(0,0,0,0)
     l.addWidget(w1)
-    l.addWidget(self.w2)
+    l.addLayout(tempL)
     self.setLayout(l)
 
   def mousePressEvent(self, event):
@@ -71,23 +85,25 @@ class AppArea(QScrollArea):
 
   def updateApps(self, text):
     self.clearLayout()
-    (names, images, indexes) = self.getApps(text)
+    (names, images, miniDescr, indexes) = self.getApps(text)
     for i in range(len(names)):
-      app = App(names[i], images[i], indexes[i])
+      app = App(names[i], images[i], miniDescr[i], indexes[i])
       self.grid.addWidget(app)
       app.clicked.connect(lambda: self.appClicked.emit(QObject().sender().index))
 
   def getApps(self, name):
     cur = self.con.cursor()
-    cur.execute("SELECT Title, Icon, Id FROM App WHERE UPPER(Title) LIKE UPPER('" + name + "%');")
+    cur.execute("SELECT Title, Icon, MINI_DESCRIPTION, Id FROM App WHERE UPPER(Title) LIKE UPPER('" + name + "%');")
     appNames = []
     images = []
+    miniDescr = []
     indexes = []
     for row in cur.fetchall():
       appNames.append(row[0])
       images.append(row[1])
-      indexes.append(int(row[2]))
-    return (appNames, images, indexes)
+      miniDescr.append(row[2])
+      indexes.append(int(row[3]))
+    return (appNames, images, miniDescr, indexes)
 
 #==============================================================
 class Search(QWidget):

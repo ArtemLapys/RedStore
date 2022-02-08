@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QPushButton, QWidget
 from PyQt5.QtWidgets import QLabel, QVBoxLayout
 from PyQt5.QtGui     import QPixmap
 from installApp      import Install
+from PyQt5.QtCore    import QProcess
+from PyQt5           import QtCore, QtGui
 
 class Page(QWidget):
   def __init__(self, con):

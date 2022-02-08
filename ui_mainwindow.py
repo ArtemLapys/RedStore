@@ -12,6 +12,8 @@ from PyQt5.QtCore    import * #Qt
 from PyQt5.QtGui     import QPixmap
 from headerClass     import Header
 from PyQt5.QtWidgets import QLabel,QScrollArea
+from PyQt5.QtCore    import QProcess
+
 import asyncio
 from iapp       import IappTab
 from myApp      import myAppTab
@@ -19,7 +21,8 @@ from pageApp    import Page
 from home       import Home
 from search     import Search
 from pageApp    import Page
-from installApp import Install, checkInstall, Remove
+from installApp import Install, checkInstall, Remove, checkUpdate
+from support import Support
 
 import sqlite3
 import fdb
@@ -132,7 +135,7 @@ class Ui_MainWindow(object):
         self.settingsButton = Header(MainWindow, 5)
         self.settingsButton.setGeometry(QtCore.QRect(1214, 0, 36, 44))
         self.settingsButton.setText("")
-        self.settingsButton.setPixmap(QtGui.QPixmap(":/mainWindow/imageRedStore/settings.png"))
+       # self.settingsButton.setPixmap(QtGui.QPixmap(":/mainWindow/imageRedStore/settings.png"))
         self.settingsButton.setObjectName("settingsButton")
 
 
@@ -152,7 +155,7 @@ class Ui_MainWindow(object):
 "background-color:#E44641;\n"
 "}\n"
 "")
-        self.progressBar.setProperty("value", 0)
+        self.progressBar.setProperty("value", 100)
         self.progressBar.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.progressBar.setTextVisible(False)
         self.progressBar.setOrientation(QtCore.Qt.Horizontal)
@@ -197,8 +200,14 @@ class Ui_MainWindow(object):
               self.clicked.emit()
 
         def upd(self):
-              #  self.installapp.deleteLater()
-               self.installapp = myAppTab(self.con)
+                #удаляю старую вкладку
+                self.tabWidget.widget(2).deleteLater()
+                #создаю новую добавляю новую
+                self.installapp = myAppTab(self.con)
+                self.installapp.setObjectName("installapp")
+                self.tabWidget.insertTab(2, self.installapp, "installapp")
+                self.installapp.appClicked.connect(lambda index: setInformation(index))
+                self.installapp.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
                 
 
         #main
@@ -224,7 +233,7 @@ class Ui_MainWindow(object):
         self.searchapp.setObjectName("searchapp")
         self.tabWidget.addTab(self.searchapp, "searchapp")
 
-        self.support = QtWidgets.QWidget()
+        self.support = Support(self.con)
         self.support.setObjectName("support")
         self.tabWidget.addTab(self.support, "support")
 
@@ -236,7 +245,6 @@ class Ui_MainWindow(object):
         def setInformation(index):
           cur = self.con.cursor()
           cur.execute("SELECT TITLE, ICON, APP.ID, MINI_DESCRIPTION, DESCRIPTION, FIRST_NAME, LAST_NAME FROM APP JOIN AUTHORS ON APP.AUTHOR=AUTHORS.ID WHERE APP.ID=" +str(index)+ ";")
-     #     cur.execute("SELECT Title, Icon, INSTALL_PACK, MINI_DESCRIPTION, DESCRIPTION FROM  App WHERE Id=" +str(index)+ ";")
           result = cur.fetchone()
           self.nameAppPageIApp_Label.setText(result[0])
           image = result[1]
@@ -258,7 +266,8 @@ class Ui_MainWindow(object):
                 self.installButtonPageIApp_Label.show()
           elif check == True:
                 self.installButtonPageIApp_Label.hide()
-                self.deleteButtonPageIApp_Label.show()   
+                self.deleteButtonPageIApp_Label.show()
+               # checkUp =checkUpdate(str(self.tempNameInstallPack),self)
           self.miniDiscrAppPageIApp_Lapes.setText(result[3])
           self.descriptionAppPageIApp_Lapes.setText(result[4])
           if result[6] == None:
@@ -268,8 +277,9 @@ class Ui_MainWindow(object):
           self.descriptionAppPageIApp_Lapes.setGeometry(QtCore.QRect(0, 0, 1141, len(self.descriptionAppPageIApp_Lapes.text())))
         self.iapp.appClicked.connect(lambda index: setInformation(index))
         self.iapp.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
-        self.installapp.appClicked.connect(lambda index: setInformation(index))
-        self.installapp.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
+        # self.installapp.appClicked.connect(lambda index: setInformation(index))
+        # self.installapp.appClicked.connect(lambda: self.tabWidget.setCurrentIndex(6))
+        
  
 
 
@@ -301,6 +311,8 @@ class Ui_MainWindow(object):
      #  self.installButtonPageIApp_Label.setAlignment(QtCore.Qt.AlignCenter)
         self.installButtonPageIApp_Label.setObjectName("installButtonPageIApp_Label")
         self.installButtonPageIApp_Label.setCursor(QtCore.Qt.PointingHandCursor)
+        self.process = QProcess()
+
         self.installButtonPageIApp_Label.clicked.connect(lambda: Install(str(self.tempNameInstallPack),self))
       #  self.installButtonPageIApp_Label.clicked.connect(lambda: checkInstall(str(self.tempNameInstallPack), self))
         self.installButtonPageIApp_Label.hide()
@@ -411,11 +423,12 @@ class Ui_MainWindow(object):
           if self.tabWidget.currentIndex() == 0:
             self.tabWidget.setCurrentIndex(3)
             self.searchapp.startEdit(text)
+           # Header()
         def processSearch(text):
           if self.tabWidget.currentIndex() == 3:
             self.home.searchBar.setText(text)
             if text == "":
-              self.tabWidget.setCurrentIndex(0)
+              #self.tabWidget.setCurrentIndex(0)
               self.home.searchBar.setFocus()
         self.home.searchRequested.connect(initSearch)
         self.searchapp.searchBar.textChanged.connect(processSearch)
@@ -424,7 +437,7 @@ class Ui_MainWindow(object):
         
 
 
-        #self.tabWidget.tabBar().hide()
+        self.tabWidget.tabBar().hide()
         #qttablet переходит на задний план:
         #self.tabWidget.raise_()
         self.header.raise_()

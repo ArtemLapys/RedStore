@@ -22,7 +22,7 @@ class IappTab(AppArea):
 
   def getMaxCount(self):
     cur = self.con.cursor()
-    cur.execute("SELECT COUNT(*) FROM App")
+    cur.execute("SELECT COUNT(*) FROM App WHERE WHITE_APP=TRUE")
     return cur.fetchone()[0]
 
   def getApps(self, line):
